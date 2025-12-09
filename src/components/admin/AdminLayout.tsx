@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Package, Star, LogOut, LayoutDashboard } from "lucide-react";
+import { Package, Star, LogOut, LayoutDashboard, Users } from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -46,6 +46,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/admin/products", icon: Package, label: "Products" },
     { to: "/admin/reviews", icon: Star, label: "Reviews" },
+    { to: "/admin/team", icon: Users, label: "Team" },
   ];
 
   return (

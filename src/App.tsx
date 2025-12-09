@@ -15,6 +15,7 @@ import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminReviews from "./pages/admin/AdminReviews";
+import AdminTeam from "./pages/admin/AdminTeam";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
             <Route path="/admin/reviews" element={<AdminReviews />} />
+            <Route path="/admin/team" element={<AdminTeam />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
