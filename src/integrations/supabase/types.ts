@@ -14,10 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           allow_quantity: boolean | null
           category: Database["public"]["Enums"]["product_category"]
+          category_id: string | null
           created_at: string | null
           description: string
           id: string
@@ -31,6 +53,7 @@ export type Database = {
         Insert: {
           allow_quantity?: boolean | null
           category: Database["public"]["Enums"]["product_category"]
+          category_id?: string | null
           created_at?: string | null
           description: string
           id?: string
@@ -44,6 +67,7 @@ export type Database = {
         Update: {
           allow_quantity?: boolean | null
           category?: Database["public"]["Enums"]["product_category"]
+          category_id?: string | null
           created_at?: string | null
           description?: string
           id?: string
@@ -54,7 +78,15 @@ export type Database = {
           stock?: number
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
