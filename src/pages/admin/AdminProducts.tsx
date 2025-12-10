@@ -15,8 +15,15 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 const AdminProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -26,7 +33,7 @@ const AdminProducts = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "painting" as "painting" | "tshirt",
+    category_id: "",
     price: "",
     stock: "",
     image_url: "",
@@ -38,7 +45,7 @@ const AdminProducts = () => {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from("products")
-      .select("*")
+      .select("*, categories(id, name, slug)")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -49,15 +56,21 @@ const AdminProducts = () => {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    const { data } = await supabase.from("categories").select("*").order("name");
+    if (data) setCategories(data);
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const resetForm = () => {
     setFormData({
       name: "",
       description: "",
-      category: "painting",
+      category_id: "",
       price: "",
       stock: "",
       image_url: "",
@@ -68,12 +81,12 @@ const AdminProducts = () => {
     setImagePreview(null);
   };
 
-  const openEditDialog = (product: Product) => {
+  const openEditDialog = (product: any) => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
       description: product.description,
-      category: product.category,
+      category_id: product.category_id || "",
       price: product.price.toString(),
       stock: product.stock.toString(),
       image_url: product.image_url,
@@ -134,10 +147,12 @@ const AdminProducts = () => {
       return;
     }
 
+    const selectedCategory = categories.find(c => c.id === formData.category_id);
     const productData = {
       name: formData.name,
       description: formData.description,
-      category: formData.category,
+      category: (selectedCategory?.slug || "painting") as "painting" | "tshirt",
+      category_id: formData.category_id || null,
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),
       image_url: formData.image_url,
@@ -226,17 +241,20 @@ const AdminProducts = () => {
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
                     <Select
-                      value={formData.category}
-                      onValueChange={(value: "painting" | "tshirt") =>
-                        setFormData({ ...formData, category: value })
+                      value={formData.category_id}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category_id: value })
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="painting">Painting</SelectItem>
-                        <SelectItem value="tshirt">T-Shirt</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -383,7 +401,7 @@ const AdminProducts = () => {
                           />
                         </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell className="capitalize">{product.category}</TableCell>
+                        <TableCell className="capitalize">{(product as any).categories?.name || product.category}</TableCell>
                         <TableCell>৳{product.price}</TableCell>
                         <TableCell>{product.stock}</TableCell>
                         <TableCell className="text-right">
