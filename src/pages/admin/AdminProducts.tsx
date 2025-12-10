@@ -147,11 +147,10 @@ const AdminProducts = () => {
       return;
     }
 
-    const selectedCategory = categories.find(c => c.id === formData.category_id);
     const productData = {
       name: formData.name,
       description: formData.description,
-      category: (selectedCategory?.slug || "painting") as "painting" | "tshirt",
+      category: "other" as const,
       category_id: formData.category_id || null,
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),
