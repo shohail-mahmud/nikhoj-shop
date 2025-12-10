@@ -51,6 +51,22 @@ CREATE TYPE public.product_category AS ENUM (
 
 
 --
+-- Name: handle_new_user_role(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.handle_new_user_role() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+BEGIN
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (NEW.id, 'user');
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: has_role(uuid, public.app_role); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -85,6 +101,18 @@ $$;
 SET default_table_access_method = heap;
 
 --
+-- Name: categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.categories (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    name text NOT NULL,
+    slug text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: products; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -99,7 +127,8 @@ CREATE TABLE public.products (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     sizes text[],
-    allow_quantity boolean DEFAULT true
+    allow_quantity boolean DEFAULT true,
+    category_id uuid
 );
 
 
@@ -154,6 +183,30 @@ CREATE TABLE public.user_roles (
     role public.app_role NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: categories categories_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_name_key UNIQUE (name);
+
+
+--
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: categories categories_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_slug_key UNIQUE (slug);
 
 
 --
@@ -227,11 +280,26 @@ CREATE TRIGGER update_site_settings_updated_at BEFORE UPDATE ON public.site_sett
 
 
 --
+-- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.products
+    ADD CONSTRAINT products_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id);
+
+
+--
 -- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_roles
     ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: categories Admins can delete categories; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can delete categories" ON public.categories FOR DELETE USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 
 --
@@ -249,6 +317,20 @@ CREATE POLICY "Admins can delete reviews" ON public.reviews FOR DELETE TO authen
 
 
 --
+-- Name: team_members Admins can delete team members; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can delete team members" ON public.team_members FOR DELETE USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: categories Admins can insert categories; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can insert categories" ON public.categories FOR INSERT WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
 -- Name: products Admins can insert products; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -260,6 +342,20 @@ CREATE POLICY "Admins can insert products" ON public.products FOR INSERT TO auth
 --
 
 CREATE POLICY "Admins can insert reviews" ON public.reviews FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: team_members Admins can insert team members; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can insert team members" ON public.team_members FOR INSERT WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: categories Admins can update categories; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can update categories" ON public.categories FOR UPDATE USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 
 --
@@ -277,10 +373,24 @@ CREATE POLICY "Admins can update reviews" ON public.reviews FOR UPDATE TO authen
 
 
 --
+-- Name: team_members Admins can update team members; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admins can update team members" ON public.team_members FOR UPDATE USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
 -- Name: user_roles Admins can view all roles; Type: POLICY; Schema: public; Owner: -
 --
 
 CREATE POLICY "Admins can view all roles" ON public.user_roles FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: categories Anyone can view categories; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Anyone can view categories" ON public.categories FOR SELECT USING (true);
 
 
 --
@@ -317,6 +427,12 @@ CREATE POLICY "Anyone can view team members" ON public.team_members FOR SELECT U
 
 CREATE POLICY "Users can view their own roles" ON public.user_roles FOR SELECT TO authenticated USING ((auth.uid() = user_id));
 
+
+--
+-- Name: categories; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: products; Type: ROW SECURITY; Schema: public; Owner: -
