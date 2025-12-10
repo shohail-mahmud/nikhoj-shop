@@ -168,7 +168,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer hideQuickLinks />
     </div>;
 };
 export default ProductDetail;

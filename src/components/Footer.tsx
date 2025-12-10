@@ -1,9 +1,14 @@
 import { Instagram, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
-export const Footer = () => {
+
+interface FooterProps {
+  hideQuickLinks?: boolean;
+}
+
+export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
   return <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={`grid grid-cols-1 ${hideQuickLinks ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8`}>
           {/* Brand */}
           <div>
             <h3 className="text-lg font-bold mb-2">Nikhoj Shop</h3>
@@ -13,36 +18,38 @@ export const Footer = () => {
           </div>
 
           {/* Links */}
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/shop" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms-privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Terms & Privacy
-                </Link>
-              </li>
-              <li>
-                <Link to="/auth" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Admin Login
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {!hideQuickLinks && (
+            <div>
+              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/shop" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Shop
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms-privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Terms & Privacy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/auth" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Admin Login
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {/* Contact */}
           <div>
