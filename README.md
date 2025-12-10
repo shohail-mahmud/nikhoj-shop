@@ -1,73 +1,86 @@
-# Welcome to your Lovable project
+# Nikhoj Shop
 
-## Project info
+A modern e-commerce platform built with React, TypeScript, and Supabase.
 
-**URL**: https://lovable.dev/projects/a17f8e4f-b9ac-4ddf-a0ae-40919df14ce4
+## Features
 
-## How can I edit this code?
+- 🛍️ **Product Catalog** - Browse paintings, t-shirts, and custom products
+- 🔐 **Authentication** - Secure user login and registration
+- 👤 **Admin Dashboard** - Manage products, categories, reviews, and team members
+- 📱 **Responsive Design** - Optimized for all devices
+- 🎨 **Beautiful UI** - Built with shadcn/ui and Tailwind CSS
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Backend**: Supabase (Database, Auth, Storage)
+- **State Management**: TanStack React Query
+- **Routing**: React Router v6
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a17f8e4f-b9ac-4ddf-a0ae-40919df14ce4) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+ 
+- npm or bun
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Environment Variables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` file in the root directory:
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/       # Reusable UI components
+│   ├── ui/          # shadcn/ui components
+│   └── admin/       # Admin-specific components
+├── contexts/        # React context providers
+├── hooks/           # Custom React hooks
+├── integrations/    # Third-party integrations (Supabase)
+├── lib/             # Utility functions
+├── pages/           # Page components
+│   └── admin/       # Admin pages
+└── assets/          # Static assets
+```
 
-This project is built with:
+## Database Schema
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **products** - Product catalog with categories, pricing, stock
+- **categories** - Product categories
+- **reviews** - Customer reviews with images
+- **team_members** - Team member profiles
+- **user_roles** - User role management (admin/user)
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/a17f8e4f-b9ac-4ddf-a0ae-40919df14ce4) and click on Share -> Publish.
+The project can be deployed via:
 
-## Can I connect a custom domain to my Lovable project?
+1. **Lovable** - Click Share → Publish in the Lovable editor
+2. **Custom hosting** - Build with `npm run build` and deploy the `dist` folder
 
-Yes, you can!
+## License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT License
