@@ -55,7 +55,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
           <div>
             <h4 className="font-semibold mb-4">Connect With Us</h4>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/ruhama_islamm" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
+              <a href="https://instagram.com/username" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
               </a>
               <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
@@ -63,7 +63,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              @ruhama_islamm
+              @username
             </p>
           </div>
         </div>
