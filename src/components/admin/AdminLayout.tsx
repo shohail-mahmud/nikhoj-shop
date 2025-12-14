@@ -57,7 +57,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-8">
               <Link to="/" className="font-serif text-xl font-bold text-primary">
-                Nikhoj Admin
+                Admin Panel
               </Link>
               <div className="hidden md:flex items-center gap-1">
                 {navItems.map((item) => (

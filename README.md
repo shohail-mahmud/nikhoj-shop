@@ -1,4 +1,4 @@
-# Nikhoj Shop
+# Your Shop name
 
 A modern e-commerce platform built with React, TypeScript, and Supabase.
 

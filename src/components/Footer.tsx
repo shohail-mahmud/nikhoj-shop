@@ -11,7 +11,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
         <div className={`grid grid-cols-1 ${hideQuickLinks ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8`}>
           {/* Brand */}
           <div>
-            <h3 className="text-lg font-bold mb-2">Nikhoj Shop</h3>
+            <h3 className="text-lg font-bold mb-2">Your Shop name</h3>
             <p className="text-sm text-muted-foreground">
               Discover Art & Style — Hidden, but Never Lost.
             </p>
@@ -69,7 +69,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Nikhoj Shop. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Your Shop name. All rights reserved.</p>
           <p className="mt-1">Based in Bangladesh</p>
           
         </div>
