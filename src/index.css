@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nikhoj Shop Design System - All colors MUST be HSL */
+/* Your Shop name Design System - All colors MUST be HSL */
 
 @layer base {
   :root {

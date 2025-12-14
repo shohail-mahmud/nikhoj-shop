@@ -35,7 +35,7 @@ export const Navbar = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold">Nikhoj Shop</h1>
+            <h1 className="text-2xl font-bold">Your Shop name</h1>
           </Link>
 
           {/* Desktop Nav */}
