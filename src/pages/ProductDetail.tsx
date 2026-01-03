@@ -50,7 +50,7 @@ const ProductDetail = () => {
       message += ` × ${quantity} = ৳${(product.price * quantity).toFixed(2)}`;
     }
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://instagram.com/username`, "_blank");
+    window.open(`https://instagram.com/ruhama_islamm`, "_blank");
   };
   if (!product) {
     return <div className="min-h-screen flex flex-col">

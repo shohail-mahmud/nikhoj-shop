@@ -91,12 +91,12 @@ const TermsPrivacy = () => {
               If you have any questions about our terms, privacy policy, or need assistance with your order, 
               please contact us via{" "}
               <a 
-                href="https://instagram.com/username" 
+                href="https://instagram.com/ruhama_islamm" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline font-semibold"
               >
-                Instagram @username
+                Instagram @ruhama_islamm
               </a>
               .
             </p>

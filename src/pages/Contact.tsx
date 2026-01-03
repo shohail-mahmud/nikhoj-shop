@@ -13,13 +13,13 @@ const Contact = () => {
           <p className="text-lg">Have questions? Want to place an order? Reach out to us on Instagram!</p>
           
           <div className="flex flex-col gap-4 items-center">
-            <a href="https://instagram.com/username" target="_blank" rel="noopener noreferrer">
+            <a href="https://instagram.com/ruhama_islamm" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2">
                 <Instagram className="h-5 w-5" />
                 Message us on Instagram
               </Button>
             </a>
-            <p className="text-muted-foreground">@username</p>
+            <p className="text-muted-foreground">@ruhama_islamm</p>
           </div>
         </div>
       </main>

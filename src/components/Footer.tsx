@@ -11,7 +11,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
         <div className={`grid grid-cols-1 ${hideQuickLinks ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8`}>
           {/* Brand */}
           <div>
-            <h3 className="text-lg font-bold mb-2">Your Shop name</h3>
+            <h3 className="text-lg font-bold mb-2">Nikhoj Shop</h3>
             <p className="text-sm text-muted-foreground">
               Discover Art & Style — Hidden, but Never Lost.
             </p>
@@ -55,7 +55,7 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
           <div>
             <h4 className="font-semibold mb-4">Connect With Us</h4>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/username" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
+              <a href="https://instagram.com/ruhama_islamm" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
               </a>
               <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
@@ -63,13 +63,13 @@ export const Footer = ({ hideQuickLinks = false }: FooterProps) => {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              @username
+              @ruhama_islamm
             </p>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Your Shop name. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Nikhoj Shop. All rights reserved.</p>
           <p className="mt-1">Based in Bangladesh</p>
           
         </div>
