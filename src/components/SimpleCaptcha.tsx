@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RefreshCw, CheckCircle, XCircle } from "lucide-react";
+import { RefreshCw, CheckCircle, XCircle, Cat, Dog, Car, Bike, Flower2, TreePine, Fish, Bird, Coffee, Pizza, IceCream, Cake } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SimpleCaptchaProps {
   open: boolean;
@@ -17,79 +16,137 @@ interface SimpleCaptchaProps {
   onSuccess: () => void;
 }
 
-const generateProblem = () => {
-  const operators = ["+", "-", "×"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
+const ICONS = [
+  { id: "cat", icon: Cat, label: "cats" },
+  { id: "dog", icon: Dog, label: "dogs" },
+  { id: "car", icon: Car, label: "cars" },
+  { id: "bike", icon: Bike, label: "bikes" },
+  { id: "flower", icon: Flower2, label: "flowers" },
+  { id: "tree", icon: TreePine, label: "trees" },
+  { id: "fish", icon: Fish, label: "fish" },
+  { id: "bird", icon: Bird, label: "birds" },
+  { id: "coffee", icon: Coffee, label: "coffee cups" },
+  { id: "pizza", icon: Pizza, label: "pizzas" },
+  { id: "icecream", icon: IceCream, label: "ice creams" },
+  { id: "cake", icon: Cake, label: "cakes" },
+];
+
+const COLORS = [
+  "text-rose-500",
+  "text-blue-500",
+  "text-green-500",
+  "text-amber-500",
+  "text-purple-500",
+  "text-cyan-500",
+  "text-pink-500",
+  "text-indigo-500",
+  "text-teal-500",
+];
+
+interface GridItem {
+  id: string;
+  iconIndex: number;
+  colorIndex: number;
+  isTarget: boolean;
+}
+
+const generateGrid = () => {
+  // Pick a random target icon
+  const targetIconIndex = Math.floor(Math.random() * ICONS.length);
+  const targetIcon = ICONS[targetIconIndex];
   
-  let num1: number, num2: number, answer: number;
+  // Generate grid with 9 items (3x3)
+  const grid: GridItem[] = [];
+  const targetCount = Math.floor(Math.random() * 3) + 2; // 2-4 target icons
   
-  switch (operator) {
-    case "+":
-      num1 = Math.floor(Math.random() * 20) + 1;
-      num2 = Math.floor(Math.random() * 20) + 1;
-      answer = num1 + num2;
-      break;
-    case "-":
-      num1 = Math.floor(Math.random() * 20) + 10;
-      num2 = Math.floor(Math.random() * 10) + 1;
-      answer = num1 - num2;
-      break;
-    case "×":
-      num1 = Math.floor(Math.random() * 10) + 1;
-      num2 = Math.floor(Math.random() * 10) + 1;
-      answer = num1 * num2;
-      break;
-    default:
-      num1 = 1;
-      num2 = 1;
-      answer = 2;
+  // Add target icons
+  for (let i = 0; i < targetCount; i++) {
+    grid.push({
+      id: `target-${i}`,
+      iconIndex: targetIconIndex,
+      colorIndex: Math.floor(Math.random() * COLORS.length),
+      isTarget: true,
+    });
   }
   
-  return { num1, num2, operator, answer };
+  // Fill rest with random non-target icons
+  const remainingCount = 9 - targetCount;
+  const otherIcons = ICONS.filter((_, idx) => idx !== targetIconIndex);
+  
+  for (let i = 0; i < remainingCount; i++) {
+    const randomIconIndex = Math.floor(Math.random() * otherIcons.length);
+    const actualIndex = ICONS.findIndex(icon => icon.id === otherIcons[randomIconIndex].id);
+    grid.push({
+      id: `other-${i}`,
+      iconIndex: actualIndex,
+      colorIndex: Math.floor(Math.random() * COLORS.length),
+      isTarget: false,
+    });
+  }
+  
+  // Shuffle the grid
+  for (let i = grid.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [grid[i], grid[j]] = [grid[j], grid[i]];
+  }
+  
+  return { grid, targetIcon };
 };
 
 export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaProps) => {
-  const [problem, setProblem] = useState(generateProblem);
-  const [userAnswer, setUserAnswer] = useState("");
+  const [{ grid, targetIcon }, setChallenge] = useState(() => generateGrid());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      setProblem(generateProblem());
-      setUserAnswer("");
-      setError(false);
-      setSuccess(false);
-    }
-  }, [open]);
-
-  const refreshProblem = () => {
-    setProblem(generateProblem());
-    setUserAnswer("");
+  const refresh = useCallback(() => {
+    setChallenge(generateGrid());
+    setSelected(new Set());
     setError(false);
     setSuccess(false);
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      refresh();
+    }
+  }, [open, refresh]);
+
+  const toggleSelection = (id: string) => {
+    if (success) return;
+    
+    const newSelected = new Set(selected);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelected(newSelected);
+    setError(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerify = () => {
+    const targetIds = grid.filter(item => item.isTarget).map(item => item.id);
+    const selectedArray = Array.from(selected);
     
-    const parsed = parseInt(userAnswer.trim(), 10);
+    // Check if selection matches exactly
+    const isCorrect = 
+      targetIds.length === selectedArray.length &&
+      targetIds.every(id => selected.has(id));
     
-    if (parsed === problem.answer) {
+    if (isCorrect) {
       setSuccess(true);
       setError(false);
       setTimeout(() => {
         onOpenChange(false);
         onSuccess();
-      }, 500);
+      }, 600);
     } else {
       setError(true);
       setSuccess(false);
-      setUserAnswer("");
-      // Generate new problem after wrong answer
       setTimeout(() => {
-        refreshProblem();
-      }, 1000);
+        refresh();
+      }, 1200);
     }
   };
 
@@ -101,50 +158,56 @@ export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaPr
             🛡️ Quick Verification
           </DialogTitle>
           <DialogDescription>
-            Solve this simple math problem to continue to Instagram.
+            Select all the <span className="font-semibold text-foreground">{targetIcon.label}</span> to continue.
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center justify-center gap-3 p-6 bg-muted/50 rounded-xl">
-            <div className="text-3xl font-bold text-foreground">
-              {problem.num1} {problem.operator} {problem.num2} = ?
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <targetIcon.icon className="h-5 w-5 text-primary" />
+              <span>Find all {targetIcon.label}</span>
             </div>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={refreshProblem}
-              className="ml-2"
-              title="New problem"
+              onClick={refresh}
+              title="New challenge"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="captcha-answer">Your Answer</Label>
-            <Input
-              id="captcha-answer"
-              type="number"
-              value={userAnswer}
-              onChange={(e) => {
-                setUserAnswer(e.target.value);
-                setError(false);
-              }}
-              placeholder="Enter your answer"
-              className={`text-center text-lg ${
-                error ? "border-destructive focus-visible:ring-destructive" : 
-                success ? "border-green-500 focus-visible:ring-green-500" : ""
-              }`}
-              autoFocus
-            />
+          <div className="grid grid-cols-3 gap-2">
+            {grid.map((item) => {
+              const IconComponent = ICONS[item.iconIndex].icon;
+              const isSelected = selected.has(item.id);
+              
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => toggleSelection(item.id)}
+                  className={cn(
+                    "aspect-square flex items-center justify-center rounded-xl border-2 transition-all duration-200",
+                    "hover:scale-105 hover:shadow-md",
+                    isSelected
+                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                      : "border-border bg-muted/30 hover:border-primary/50",
+                    success && item.isTarget && "border-green-500 bg-green-500/10",
+                    error && isSelected && !item.isTarget && "border-destructive bg-destructive/10"
+                  )}
+                >
+                  <IconComponent className={cn("h-8 w-8", COLORS[item.colorIndex])} />
+                </button>
+              );
+            })}
           </div>
           
           {error && (
             <div className="flex items-center gap-2 text-destructive text-sm">
               <XCircle className="h-4 w-4" />
-              Wrong answer. Try again with a new problem.
+              Wrong selection. Try again with a new challenge.
             </div>
           )}
           
@@ -164,11 +227,15 @@ export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaPr
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1" disabled={!userAnswer.trim()}>
-              Verify
+            <Button 
+              onClick={handleVerify} 
+              className="flex-1" 
+              disabled={selected.size === 0 || success}
+            >
+              Verify ({selected.size} selected)
             </Button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
