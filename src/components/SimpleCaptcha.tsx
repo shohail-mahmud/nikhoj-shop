@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, CheckCircle, XCircle, Cat, Dog, Car, Bike, Flower2, TreePine, Fish, Bird, Coffee, Pizza, IceCream, Cake } from "lucide-react";
+import { RefreshCw, CheckCircle, XCircle, Cat, Dog, Car, Bike, Flower2, TreePine, Fish, Bird, Coffee, Pizza, IceCream, Cake, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SimpleCaptchaProps {
@@ -51,15 +51,12 @@ interface GridItem {
 }
 
 const generateGrid = () => {
-  // Pick a random target icon
   const targetIconIndex = Math.floor(Math.random() * ICONS.length);
   const targetIcon = ICONS[targetIconIndex];
   
-  // Generate grid with 9 items (3x3)
   const grid: GridItem[] = [];
-  const targetCount = Math.floor(Math.random() * 3) + 2; // 2-4 target icons
+  const targetCount = Math.floor(Math.random() * 3) + 2;
   
-  // Add target icons
   for (let i = 0; i < targetCount; i++) {
     grid.push({
       id: `target-${i}`,
@@ -69,7 +66,6 @@ const generateGrid = () => {
     });
   }
   
-  // Fill rest with random non-target icons
   const remainingCount = 9 - targetCount;
   const otherIcons = ICONS.filter((_, idx) => idx !== targetIconIndex);
   
@@ -84,7 +80,6 @@ const generateGrid = () => {
     });
   }
   
-  // Shuffle the grid
   for (let i = grid.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [grid[i], grid[j]] = [grid[j], grid[i]];
@@ -129,7 +124,6 @@ export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaPr
     const targetIds = grid.filter(item => item.isTarget).map(item => item.id);
     const selectedArray = Array.from(selected);
     
-    // Check if selection matches exactly
     const isCorrect = 
       targetIds.length === selectedArray.length &&
       targetIds.every(id => selected.has(id));
@@ -152,34 +146,38 @@ export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            🛡️ Quick Verification
+      <DialogContent className="w-[calc(100%-2rem)] max-w-[340px] rounded-2xl p-4 sm:p-5">
+        <DialogHeader className="space-y-1 pb-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            Verification
           </DialogTitle>
-          <DialogDescription>
-            Select all the <span className="font-semibold text-foreground">{targetIcon.label}</span> to continue.
+          <DialogDescription className="text-xs sm:text-sm">
+            Select all the <span className="font-semibold text-foreground">{targetIcon.label}</span>
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <targetIcon.icon className="h-5 w-5 text-primary" />
-              <span>Find all {targetIcon.label}</span>
+        <div className="space-y-3">
+          {/* Challenge header */}
+          <div className="flex items-center justify-between bg-muted/50 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 text-xs sm:text-sm">
+              <targetIcon.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="text-muted-foreground">Find all {targetIcon.label}</span>
             </div>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={refresh}
+              className="h-7 w-7"
               title="New challenge"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-3.5 w-3.5" />
             </Button>
           </div>
           
-          <div className="grid grid-cols-3 gap-2">
+          {/* Image grid */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {grid.map((item) => {
               const IconComponent = ICONS[item.iconIndex].icon;
               const isSelected = selected.has(item.id);
@@ -189,52 +187,59 @@ export const SimpleCaptcha = ({ open, onOpenChange, onSuccess }: SimpleCaptchaPr
                   key={item.id}
                   onClick={() => toggleSelection(item.id)}
                   className={cn(
-                    "aspect-square flex items-center justify-center rounded-xl border-2 transition-all duration-200",
-                    "hover:scale-105 hover:shadow-md",
+                    "aspect-square flex items-center justify-center rounded-lg sm:rounded-xl border-2 transition-all duration-150",
+                    "active:scale-95",
                     isSelected
-                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                      : "border-border bg-muted/30 hover:border-primary/50",
+                      ? "border-primary bg-primary/10 shadow-sm"
+                      : "border-border bg-background hover:border-primary/50 hover:bg-muted/50",
                     success && item.isTarget && "border-green-500 bg-green-500/10",
                     error && isSelected && !item.isTarget && "border-destructive bg-destructive/10"
                   )}
                 >
-                  <IconComponent className={cn("h-8 w-8", COLORS[item.colorIndex])} />
+                  <IconComponent className={cn("h-6 w-6 sm:h-7 sm:w-7", COLORS[item.colorIndex])} />
                 </button>
               );
             })}
           </div>
           
+          {/* Status messages */}
           {error && (
-            <div className="flex items-center gap-2 text-destructive text-sm">
-              <XCircle className="h-4 w-4" />
-              Wrong selection. Try again with a new challenge.
+            <div className="flex items-center gap-2 text-destructive text-xs sm:text-sm bg-destructive/10 rounded-lg px-3 py-2">
+              <XCircle className="h-4 w-4 flex-shrink-0" />
+              <span>Incorrect. Try again.</span>
             </div>
           )}
           
           {success && (
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <CheckCircle className="h-4 w-4" />
-              Correct! Redirecting to Instagram...
+            <div className="flex items-center gap-2 text-green-600 text-xs sm:text-sm bg-green-500/10 rounded-lg px-3 py-2">
+              <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              <span>Verified! Redirecting...</span>
             </div>
           )}
           
+          {/* Buttons */}
           <div className="flex gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1"
+              className="flex-1 h-9 text-xs sm:text-sm"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleVerify} 
-              className="flex-1" 
+              className="flex-1 h-9 text-xs sm:text-sm" 
               disabled={selected.size === 0 || success}
             >
-              Verify ({selected.size} selected)
+              Verify {selected.size > 0 && `(${selected.size})`}
             </Button>
           </div>
+          
+          {/* Why captcha notice */}
+          <p className="text-[10px] sm:text-xs text-center text-muted-foreground leading-relaxed">
+            This helps us prevent spam and ensures genuine orders reach us.
+          </p>
         </div>
       </DialogContent>
     </Dialog>
