@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Instagram } from "lucide-react";
+import { SimpleCaptcha } from "@/components/SimpleCaptcha";
 const ProductDetail = () => {
   const {
     id
@@ -16,6 +17,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [countryInfo, setCountryInfo] = useState("");
+  const [showCaptcha, setShowCaptcha] = useState(false);
   useEffect(() => {
     fetchProduct();
     fetchCountryInfo();
@@ -37,7 +39,11 @@ const ProductDetail = () => {
     } = await supabase.from("site_settings").select("value").eq("key", "country_info").single();
     if (data) setCountryInfo(data.value);
   };
-  const handleOrder = () => {
+  const handleOrderClick = () => {
+    setShowCaptcha(true);
+  };
+
+  const handleCaptchaSuccess = () => {
     let message = `Hi! I'd like to order:\n\n${product.name}\n`;
     if (selectedSize) {
       message += `Size: ${selectedSize}\n`;
@@ -52,6 +58,7 @@ const ProductDetail = () => {
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://instagram.com/ruhama_islamm`, "_blank");
   };
+
   if (!product) {
     return <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -141,10 +148,16 @@ const ProductDetail = () => {
               </div>}
 
             {/* Order Button */}
-            <Button size="lg" onClick={handleOrder} className="w-full gap-2 h-12 md:h-14 text-sm md:text-base font-semibold shadow-xl hover:shadow-2xl transition-all" disabled={product.sizes && product.sizes.length > 0 && !product.sizes.includes(selectedSize) || product.allow_quantity && quantity > product.stock}>
+            <Button size="lg" onClick={handleOrderClick} className="w-full gap-2 h-12 md:h-14 text-sm md:text-base font-semibold shadow-xl hover:shadow-2xl transition-all" disabled={product.sizes && product.sizes.length > 0 && !product.sizes.includes(selectedSize) || product.allow_quantity && quantity > product.stock}>
               <Instagram className="h-4 w-4 md:h-5 md:w-5" />
               {product.sizes && product.sizes.length > 0 && !product.sizes.includes(selectedSize) ? "Out of Stock" : product.allow_quantity && quantity > product.stock ? "Not Enough Stock" : "Order on Instagram"}
             </Button>
+
+            <SimpleCaptcha
+              open={showCaptcha}
+              onOpenChange={setShowCaptcha}
+              onSuccess={handleCaptchaSuccess}
+            />
 
             {/* Location Info */}
             <div className="p-3 md:p-4 bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg md:rounded-xl border border-accent/20">
