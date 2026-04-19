@@ -2,6 +2,10 @@
 
 A modern e-commerce platform built with React, TypeScript, and Supabase.
 
+## live Demo 
+
+https://nikhoj-shop.vercel.app/
+
 ## Features
 
 - 🛍️ **Product Catalog** - Browse paintings, t-shirts, and custom products
